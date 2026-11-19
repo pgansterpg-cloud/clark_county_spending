@@ -27,28 +27,40 @@ nv_list = []
 current_page = 1 
 has_next = True 
 
-while has_next:
-    payload["page"] = current_page 
+quarters = [
+    {"start_date": "2024-10-01", "end_date": "2024-12-31"},
+    {"start_date": "2025-01-01", "end_date": "2025-03-31"},
+    {"start_date": "2025-04-01", "end_date": "2025-06-30"},
+    {"start_date": "2025-07-01", "end_date": "2025-09-30"}
+]
 
-    # 4. send a POST request with the payload
-    response = requests.post(url, json=payload)
+for quarter in quarters:
+    payload["filters"]["time_period"] = [quarter]
+    current_page = 1 
+    has_next = True
+    
+    while has_next:
+        payload["page"] = current_page 
 
-    # 5. print the status code
-    print(response.status_code) 
+        # 4. send a POST request with the payload
+        response = requests.post(url, json=payload)
 
-    # 6. if it worked, turn the response into Python data with .json()
-    data = response.json()
-    # print(json.dumps(data, indent=4))
+        # 5. print the status code
+        print(response.status_code) 
 
-    # 7. print the results, then loop through them and print
-    if response.status_code == 200:
-        nv_list.extend(data["results"])
-        has_next = data["page_metadata"]["hasNext"] 
-        current_page += 1
-    else:
-        print(response.text)
-        break 
-    time.sleep(1)
+        # 6. if it worked, turn the response into Python data with .json()
+        data = response.json()
+        # print(json.dumps(data, indent=4))
+
+        # 7. print the results, then loop through them and print
+        if response.status_code == 200:
+            nv_list.extend(data["results"])
+            has_next = data["page_metadata"]["hasNext"] 
+            current_page += 1
+        else:
+            print(response.text)
+            break 
+        time.sleep(1)
 
 print(len(nv_list))
 # for award in nv_list:
